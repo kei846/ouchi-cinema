@@ -1,48 +1,62 @@
-import Link from 'next/link';
-import { createClient } from 'next-sanity';
+'use client';
 
-// Define the structure of a post
-interface Post {
-  _id: string;
-  title: string;
-  slug: {
-    current: string;
+import { useState, useEffect } from 'react';
+import TypingIntro from '@/components/TypingIntro';
+import ChoiceCards from '@/components/ChoiceCards';
+import GravityBridge from '@/components/GravityBridge';
+import Section1_Intro from '@/components/Section1_Intro';
+import Section2_ABC from '@/components/Section2_ABC';
+import Section3_EmotionCards from '@/components/Section3_EmotionCards';
+import Section4_AboutOuchi from '@/components/Section4_AboutOuchi';
+import Section5_Recent from '@/components/Section5_Recent';
+import Section6_Outro from '@/components/Section6_Outro';
+
+export default function HomePage() {
+  const [step, setStep] = useState('typing'); // typing, choice, bridge, content
+  const [choice, setChoice] = useState<string | null>(null);
+
+  const handleTypingComplete = () => {
+    setTimeout(() => setStep('choice'), 600); // Delay before showing choices
   };
-}
 
-// Sanity client configuration (using environment variables)
-const client = createClient({
-  projectId: process.env.NEXT_PUBLIC_SANITY_PROJECT_ID,
-  dataset: process.env.NEXT_PUBLIC_SANITY_DATASET,
-  apiVersion: '2023-01-01', // As per requirement
-  useCdn: true, // Use CDN for faster reads
-});
+  useEffect(() => {
+    let choiceTimeout: NodeJS.Timeout;
+    if (step === 'choice' && !choice) {
+      choiceTimeout = setTimeout(() => {
+        setStep('bridge');
+      }, 10000); // 10 seconds to make a choice
+    }
+    return () => clearTimeout(choiceTimeout);
+  }, [step, choice]);
 
-// Home component as an async React Server Component
-export default async function Home() {
-  // Fetch posts directly within the server component
-  const posts: Post[] = await client.fetch(`*[_type == "post"]{
-    _id,
-    title,
-    "slug": slug.current
-  } | order(publishedAt desc)`); // Order by publishedAt for a logical list
+  const handleChoiceMade = (userChoice: string) => {
+    setChoice(userChoice);
+    setTimeout(() => setStep('content'), 600); // Duration for fade out animation in ChoiceCards
+  };
 
-  return (
-    <main className="container mx-auto px-4 py-8">
-      <h1 className="text-3xl font-bold mb-8">記事一覧</h1>
-      {posts.length > 0 ? (
-        <ul>
-          {posts.map((post) => (
-            <li key={post._id} className="mb-4">
-              <Link href={`/posts/${post.slug.current}`} className="text-blue-600 hover:underline text-xl">
-                {post.title}
-              </Link>
-            </li>
-          ))}
-        </ul>
-      ) : (
-        <p>記事がありません。</p>
-      )}
-    </main>
-  );
+  const renderStep = () => {
+    switch (step) {
+      case 'typing':
+        return <TypingIntro onTypingComplete={handleTypingComplete} />;
+      case 'choice':
+        return <ChoiceCards onChoiceMade={handleChoiceMade} />;
+      case 'bridge':
+        return <GravityBridge />;
+      case 'content':
+        return (
+          <main className="bg-white transition-colors duration-600 ease-in-out">
+            <Section1_Intro />
+            <Section2_ABC />
+            <Section3_EmotionCards />
+            <Section4_AboutOuchi />
+            <Section5_Recent />
+            <Section6_Outro />
+          </main>
+        );
+      default:
+        return <TypingIntro onTypingComplete={handleTypingComplete} />;
+    }
+  };
+
+  return <div className="bg-white transition-colors duration-600 ease-in-out">{renderStep()}</div>;
 }

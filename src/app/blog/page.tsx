@@ -1,7 +1,14 @@
 import { client } from "@/sanity/lib/client";
 import Link from "next/link";
 
-async function getPosts() {
+interface Post {
+  _id: string;
+  title: string;
+  slug: string;
+  publishedAt: string;
+}
+
+async function getPosts(): Promise<Post[]> {
   const posts = await client.fetch(`*[_type == "post"] | order(publishedAt desc) {
     _id,
     title,
@@ -18,7 +25,7 @@ export default async function BlogPage() {
     <div className="container mx-auto px-4 py-8">
       <h1 className="text-3xl font-bold mb-8">Blog</h1>
       <div className="grid gap-8">
-        {posts.map((post: any) => (
+        {posts.map((post) => (
           <Link key={post._id} href={`/blog/${post.slug}`}>
             <div className="p-4 border rounded-lg hover:bg-gray-100">
               <h2 className="text-xl font-semibold">{post.title}</h2>

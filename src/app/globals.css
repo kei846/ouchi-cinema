@@ -1,26 +1,119 @@
-@import "tailwindcss";
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
 
+body {
+  background-color: #0a0a0a; /* Darker background */
+  color: #e0e0e0;
+  font-family: 'Helvetica Neue', 'Noto Sans JP', sans-serif;
+}
+
+.font-georgia {
+  font-family: Georgia, serif;
+}
+
+.font-pixel {
+  font-family: "Courier New", Courier, monospace;
+}
+
+.crt-effect::before {
+  content: " ";
+  display: block;
+  position: absolute;
+  top: 0;
+  left: 0;
+  bottom: 0;
+  right: 0;
+  background: linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.25) 50%), linear-gradient(90deg, rgba(255, 0, 0, 0.06), rgba(0, 255, 0, 0.02), rgba(0, 0, 255, 0.06));
+  z-index: 2;
+  background-size: 100% 2px, 3px 100%;
+  pointer-events: none;
+  animation: flicker 0.15s infinite;
+}
+
+@keyframes flicker {
+  0% { opacity: 0.27861; }
+  5% { opacity: 0.34769; }
+  10% { opacity: 0.54165; }
+  15% { opacity: 0.93604; }
+  20% { opacity: 0.92643; }
+  25% { opacity: 0.38312; }
+  30% { opacity: 0.51232; }
+  35% { opacity: 0.38888; }
+  40% { opacity: 0.24433; }
+  45% { opacity: 0.84626; }
+  50% { opacity: 0.83991; }
+  55% { opacity: 0.13193; }
+  60% { opacity: 0.76588; }
+  65% { opacity: 0.96634; }
+  70% { opacity: 0.66481; }
+  75% { opacity: 0.56445; }
+  80% { opacity: 0.45283; }
+  85% { opacity: 0.81812; }
+  90% { opacity: 0.52578; }
+  95% { opacity: 0.40624; }
+  100% { opacity: 0.3234; }
+}
+
+/* Custom colors for Tailwind */
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
-}
-
-@theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
-}
-
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+    --color-bg: #f6f5f2;
+    --color-text: #2d2d2d;
+    --color-accent-selection: #4a90e2;
+    --color-accent-labyrinth: #3e7cab;
 }
 
 body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+    font-family: 'Georgia', serif;
+    background-color: var(--color-bg);
+    color: var(--color-text);
+}
+
+/* Custom Tailwind classes for colors */
+.bg-custom-bg { background-color: var(--color-bg); }
+.text-custom-text { color: var(--color-text); }
+.text-accent-selection { color: var(--color-accent-selection); }
+.bg-accent-selection { background-color: var(--color-accent-selection); }
+.text-accent-labyrinth { color: var(--color-accent-labyrinth); }
+.bg-accent-labyrinth { background-color: var(--color-labyrinth); }
+
+/* Card animations */
+.choice-card, .abc-card, .emotion-card {
+    transition: all 0.3s ease-in-out;
+}
+.choice-card:hover, .abc-card:hover, .emotion-card:hover {
+    transform: translateY(-10px);
+    box-shadow: 0 10px 20px rgba(0,0,0,0.1);
+}
+.card-expand {
+    transform: scale(1.05);
+    box-shadow: 0 15px 30px rgba(0,0,0,0.2);
+}
+.card-sink {
+    opacity: 0.5;
+    transform: scale(0.95) translateY(10px);
+    box-shadow: 0 5px 10px rgba(0,0,0,0.05);
+}
+
+/* Typing cursor animation */
+@keyframes blink-caret {
+    from, to { border-color: transparent }
+    50% { border-color: var(--color-text); }
+}
+.animate-blink-caret {
+    animation: blink-caret .75s step-end infinite;
+}
+
+/* Emotion card hover text change */
+.emotion-card-text-initial {
+    display: block;
+}
+.emotion-card-text-hover {
+    display: none;
+}
+.emotion-card:hover .emotion-card-text-initial {
+    display: none;
+}
+.emotion-card:hover .emotion-card-text-hover {
+    display: block;
 }

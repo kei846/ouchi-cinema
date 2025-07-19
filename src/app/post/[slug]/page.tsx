@@ -1,11 +1,14 @@
 import { client } from "@/sanity/lib/client";
 import { PortableText } from "@portabletext/react";
 
+// Define the props type for the page component
+
+
 // Function to generate static paths for all posts
 export async function generateStaticParams() {
-  const posts = await client.fetch(`*[_type == "post"]{ "slug": slug.current }`);
-  return posts.map((post: { slug: string }) => ({
-    slug: post.slug,
+  const posts = await client.fetch<Array<{ slug: { current: string } }>>(`*[_type == "post" && defined(slug.current)]{ "slug": slug }`);
+  return posts.map((post) => ({
+    slug: post.slug.current,
   }));
 }
 
@@ -21,7 +24,7 @@ async function getPost(slug: string) {
 }
 
 // Main page component for displaying a single post
-export default async function PostPage({ params }: { params: { slug: string } }) {
+export default async function PostPage({ params }: PostPageProps) {
   const post = await getPost(params.slug);
 
   if (!post) {
