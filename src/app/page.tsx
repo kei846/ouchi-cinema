@@ -1,126 +1,98 @@
 'use client';
 
 import { useState, useEffect } from 'react';
+import { motion } from 'framer-motion';
 import InteractiveChoiceSection from '@/components/InteractiveChoiceSection';
 import TypingText from '@/components/TypingText';
 import { client } from '@/sanity/lib/client';
 import { homepageQuery } from '@/sanity/lib/queries';
 
 interface HomepageData {
-  systemMessage: string;
-  transitionMessage: string;
   choiceTitle: string;
   deepThinkButtonText: string;
   justWatchButtonText: string;
-  deepThinkContent: any[]; // Sanity Portable Text
-  justWatchContent: any[]; // Sanity Portable Text
+  deepThinkContent: any[];
+  justWatchContent: any[];
 }
 
 export default function HomePage() {
-  const [currentPhase, setCurrentPhase] = useState('loading'); // 'loading', 'systemMessage', 'transition', 'choiceUI'
-  const [homepageData, setHomepageData] = useState<HomepageData | null>(null);
+  const [data, setData] = useState<HomepageData | null>(null);
+  const [isLoading, setIsLoading] = useState(true);
+  const [showChoice, setShowChoice] = useState(false);
 
   useEffect(() => {
-    const fetchHomepageData = async () => {
+    const fetchData = async () => {
       try {
-        console.log('Fetching homepage data from Sanity...');
-        const data = await client.fetch<HomepageData>(homepageQuery);
-        console.log('Data received from Sanity:', data);
-
-        if (data) {
-          setHomepageData(data);
-          setCurrentPhase('systemMessage');
-        } else {
-          console.error('Homepage data is null or undefined. Check if a \'homepage\' document exists in Sanity Studio.');
-          setCurrentPhase('error');
-        }
+        const sanityData = await client.fetch<HomepageData>(homepageQuery);
+        setData(sanityData);
       } catch (error) {
-        console.error("Failed to fetch homepage data:", error);
-        // Fallback or error display
-        setCurrentPhase('error');
+        console.error('Failed to fetch homepage data:', error);
+      } finally {
+        setIsLoading(false);
       }
     };
-    fetchHomepageData();
+    fetchData();
   }, []);
 
-  const handleSystemMessageComplete = () => {
-    console.log('[HomePage] System message typing complete. Transitioning to transition phase.');
-    setCurrentPhase('transition');
+  const handleTypingComplete = () => {
+    setTimeout(() => {
+      setShowChoice(true);
+    }, 500); // 0.5秒待ってから選択肢を表示
   };
 
-  const handleTransitionComplete = () => {
-    console.log('[HomePage] Transition animation complete. Transitioning to choice UI phase.');
-    setCurrentPhase('choiceUI');
+  const containerVariants = {
+    hidden: { opacity: 0 },
+    visible: {
+      opacity: 1,
+      transition: { staggerChildren: 0.3 },
+    },
   };
 
-  if (currentPhase === 'loading') {
+  const itemVariants = {
+    hidden: { y: 20, opacity: 0 },
+    visible: { y: 0, opacity: 1, transition: { duration: 0.8 } },
+  };
+
+  if (isLoading) {
     return (
       <main className="flex flex-col items-center justify-center min-h-screen bg-gray-900 text-white font-mono p-4">
-        <h1 className="text-4xl font-bold mb-8 text-green-500 animate-pulse-slow">
-          <TypingText text="[ LOADING_HOMEPAGE_DATA... ]" speed={70} />
-        </h1>
+        <TypingText text="Loading..." />
       </main>
     );
-  }
-
-  if (currentPhase === 'error') {
-    return (
-      <main className="flex flex-col items-center justify-center min-h-screen bg-gray-900 text-white font-mono p-4">
-        <h1 className="text-4xl font-bold mb-8 text-red-500">
-          Error loading homepage data.
-        </h1>
-      </main>
-    );
-  }
-
-  if (!homepageData) {
-    return null; // Should not happen if currentPhase is not 'loading' or 'error'
   }
 
   return (
-    <main className="flex flex-col items-center justify-center min-h-screen bg-gray-900 text-white font-mono p-4 cinematic-bg">
-      <div className="scanline-overlay"></div> {/* Scanline overlay */}
+    <main className="flex flex-col items-center min-h-screen bg-gray-900 text-white font-mono p-4 cinematic-bg">
+      <div className="scanline-overlay"></div>
 
-      {currentPhase === 'systemMessage' && (
-        <div className="text-center bg-gray-800 p-8 rounded-lg shadow-lg border border-gray-700 animate-fade-in">
-          <h1 className="text-4xl font-bold mb-8 neon-text-green">
-            <TypingText
-              text={homepageData.systemMessage}
-              speed={70}
-              glitchChance={0.05}
-              typoChance={0.02}
-              conversionSteps={2}
-              conversionSpeed={50}
-              onComplete={handleSystemMessageComplete}
-            />
-          </h1>
-        </div>
-      )}
+      {/* Hero Section */}
+      <motion.div
+        className="flex flex-col items-center justify-center w-full h-screen text-center"
+        variants={containerVariants}
+        initial="hidden"
+        animate="visible"
+      >
+        <motion.h1 variants={itemVariants} className="text-5xl md:text-7xl font-bold text-green-400 glitch-text" data-text="How are you feeling today?">
+          <TypingText text="How are you feeling today?" onComplete={handleTypingComplete} />
+        </motion.h1>
+      </motion.div>
 
-      {currentPhase === 'transition' && (
-        <div className="text-center bg-gray-800 p-8 rounded-lg shadow-lg border border-gray-700 animate-fade-in">
-          <h1 className="text-4xl font-bold mb-8 neon-text-red">
-            <TypingText
-              text={homepageData.transitionMessage}
-              speed={50}
-              glitchChance={0.5}
-              typoChance={0.3}
-              conversionSteps={10}
-              conversionSpeed={20}
-              onComplete={handleTransitionComplete}
-            />
-          </h1>
-        </div>
-      )}
-
-      {currentPhase === 'choiceUI' && (
-        <InteractiveChoiceSection
-          choiceTitle={homepageData.choiceTitle}
-          deepThinkButtonText={homepageData.deepThinkButtonText}
-          justWatchButtonText={homepageData.justWatchButtonText}
-          deepThinkContent={homepageData.deepThinkContent}
-          justWatchContent={homepageData.justWatchContent}
-        />
+      {/* Choice Section (conditionally rendered) */}
+      {showChoice && data && (
+        <motion.div
+          className="w-full"
+          initial={{ opacity: 0, y: 50 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 1, ease: 'easeOut' }}
+        >
+          <InteractiveChoiceSection
+            choiceTitle={data.choiceTitle}
+            deepThinkButtonText={data.deepThinkButtonText}
+            justWatchButtonText={data.justWatchButtonText}
+            deepThinkContent={data.deepThinkContent}
+            justWatchContent={data.justWatchContent}
+          />
+        </motion.div>
       )}
     </main>
   );

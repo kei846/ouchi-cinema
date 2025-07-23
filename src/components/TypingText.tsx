@@ -82,19 +82,15 @@ const TypingText: React.FC<TypingTextProps> = ({
       }, delayBeforeNextStep); // This delay accounts for glitch/typo display time
     } else {
       // All characters typed
-      console.log('[TypingText] All characters processed. Setting typing complete.');
       setIsTypingComplete(true);
       setCurrentTypingChar(''); // Ensure no temporary char remains
       if (onComplete) {
-        console.log('[TypingText] Calling onComplete callback.');
         onComplete();
       }
     }
   }, [text, speed, glitchChance, typoChance, conversionSteps, conversionSpeed, getRandomNonJapaneseChar, onComplete]);
 
   useEffect(() => {
-    console.log(`[TypingText] useEffect mounted or dependencies changed. isTypingComplete: ${isTypingComplete}`);
-
     // Reset state when text prop changes
     setDisplayedText('');
     setCurrentTypingChar('');
@@ -110,14 +106,12 @@ const TypingText: React.FC<TypingTextProps> = ({
     // Start typing only if not already complete and we are at the beginning of the text
     // This ensures the typing process starts only once per `text` prop change.
     if (charIndexRef.current === 0 && !isTypingComplete) {
-      console.log('[TypingText] Initializing typing process.');
       typeNextChar();
     }
 
     // Cleanup function to clear timeout if component unmounts or dependencies change
     return () => {
       if (timeoutRef.current) {
-        console.log('[TypingText] Clearing timeout on unmount/re-render.');
         clearTimeout(timeoutRef.current);
       }
     };
