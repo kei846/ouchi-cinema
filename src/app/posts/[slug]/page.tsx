@@ -1,9 +1,9 @@
 import { client } from "@/sanity/lib/client";
 import { PortableText } from "@portabletext/react";
 
-// Define the props type for the page component
-type PostPageProps = {
+type Props = {
   params: { slug: string };
+  searchParams: { [key: string]: string | string[] | undefined };
 };
 
 // Generate static paths for all posts to pre-render them at build time
@@ -31,7 +31,7 @@ async function getPost(slug: string) {
 }
 
 // The main page component for displaying a single post
-export default async function PostPage({ params }: PostPageProps) {
+export default async function PostPage({ params }: Props) {
   const slug = params.slug; // slug is now guaranteed to be a string
 
   const post = await getPost(slug);

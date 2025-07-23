@@ -1,62 +1,127 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import TypingIntro from '@/components/TypingIntro';
-import ChoiceCards from '@/components/ChoiceCards';
-import GravityBridge from '@/components/GravityBridge';
-import Section1_Intro from '@/components/Section1_Intro';
-import Section2_ABC from '@/components/Section2_ABC';
-import Section3_EmotionCards from '@/components/Section3_EmotionCards';
-import Section4_AboutOuchi from '@/components/Section4_AboutOuchi';
-import Section5_Recent from '@/components/Section5_Recent';
-import Section6_Outro from '@/components/Section6_Outro';
+import InteractiveChoiceSection from '@/components/InteractiveChoiceSection';
+import TypingText from '@/components/TypingText';
+import { client } from '@/sanity/lib/client';
+import { homepageQuery } from '@/sanity/lib/queries';
+
+interface HomepageData {
+  systemMessage: string;
+  transitionMessage: string;
+  choiceTitle: string;
+  deepThinkButtonText: string;
+  justWatchButtonText: string;
+  deepThinkContent: any[]; // Sanity Portable Text
+  justWatchContent: any[]; // Sanity Portable Text
+}
 
 export default function HomePage() {
-  const [step, setStep] = useState('typing'); // typing, choice, bridge, content
-  const [choice, setChoice] = useState<string | null>(null);
-
-  const handleTypingComplete = () => {
-    setTimeout(() => setStep('choice'), 600); // Delay before showing choices
-  };
+  const [currentPhase, setCurrentPhase] = useState('loading'); // 'loading', 'systemMessage', 'transition', 'choiceUI'
+  const [homepageData, setHomepageData] = useState<HomepageData | null>(null);
 
   useEffect(() => {
-    let choiceTimeout: NodeJS.Timeout;
-    if (step === 'choice' && !choice) {
-      choiceTimeout = setTimeout(() => {
-        setStep('bridge');
-      }, 10000); // 10 seconds to make a choice
-    }
-    return () => clearTimeout(choiceTimeout);
-  }, [step, choice]);
+    const fetchHomepageData = async () => {
+      try {
+        console.log('Fetching homepage data from Sanity...');
+        const data = await client.fetch<HomepageData>(homepageQuery);
+        console.log('Data received from Sanity:', data);
 
-  const handleChoiceMade = (userChoice: string) => {
-    setChoice(userChoice);
-    setTimeout(() => setStep('content'), 600); // Duration for fade out animation in ChoiceCards
+        if (data) {
+          setHomepageData(data);
+          setCurrentPhase('systemMessage');
+        } else {
+          console.error('Homepage data is null or undefined. Check if a \'homepage\' document exists in Sanity Studio.');
+          setCurrentPhase('error');
+        }
+      } catch (error) {
+        console.error("Failed to fetch homepage data:", error);
+        // Fallback or error display
+        setCurrentPhase('error');
+      }
+    };
+    fetchHomepageData();
+  }, []);
+
+  const handleSystemMessageComplete = () => {
+    console.log('[HomePage] System message typing complete. Transitioning to transition phase.');
+    setCurrentPhase('transition');
   };
 
-  const renderStep = () => {
-    switch (step) {
-      case 'typing':
-        return <TypingIntro onTypingComplete={handleTypingComplete} />;
-      case 'choice':
-        return <ChoiceCards onChoiceMade={handleChoiceMade} />;
-      case 'bridge':
-        return <GravityBridge />;
-      case 'content':
-        return (
-          <main className="bg-white transition-colors duration-600 ease-in-out">
-            <Section1_Intro />
-            <Section2_ABC />
-            <Section3_EmotionCards />
-            <Section4_AboutOuchi />
-            <Section5_Recent />
-            <Section6_Outro />
-          </main>
-        );
-      default:
-        return <TypingIntro onTypingComplete={handleTypingComplete} />;
-    }
+  const handleTransitionComplete = () => {
+    console.log('[HomePage] Transition animation complete. Transitioning to choice UI phase.');
+    setCurrentPhase('choiceUI');
   };
 
-  return <div className="bg-white transition-colors duration-600 ease-in-out">{renderStep()}</div>;
+  if (currentPhase === 'loading') {
+    return (
+      <main className="flex flex-col items-center justify-center min-h-screen bg-gray-900 text-white font-mono p-4">
+        <h1 className="text-4xl font-bold mb-8 text-green-500 animate-pulse-slow">
+          <TypingText text="[ LOADING_HOMEPAGE_DATA... ]" speed={70} />
+        </h1>
+      </main>
+    );
+  }
+
+  if (currentPhase === 'error') {
+    return (
+      <main className="flex flex-col items-center justify-center min-h-screen bg-gray-900 text-white font-mono p-4">
+        <h1 className="text-4xl font-bold mb-8 text-red-500">
+          Error loading homepage data.
+        </h1>
+      </main>
+    );
+  }
+
+  if (!homepageData) {
+    return null; // Should not happen if currentPhase is not 'loading' or 'error'
+  }
+
+  return (
+    <main className="flex flex-col items-center justify-center min-h-screen bg-gray-900 text-white font-mono p-4 cinematic-bg">
+      <div className="scanline-overlay"></div> {/* Scanline overlay */}
+
+      {currentPhase === 'systemMessage' && (
+        <div className="text-center bg-gray-800 p-8 rounded-lg shadow-lg border border-gray-700 animate-fade-in">
+          <h1 className="text-4xl font-bold mb-8 neon-text-green">
+            <TypingText
+              text={homepageData.systemMessage}
+              speed={70}
+              glitchChance={0.05}
+              typoChance={0.02}
+              conversionSteps={2}
+              conversionSpeed={50}
+              onComplete={handleSystemMessageComplete}
+            />
+          </h1>
+        </div>
+      )}
+
+      {currentPhase === 'transition' && (
+        <div className="text-center bg-gray-800 p-8 rounded-lg shadow-lg border border-gray-700 animate-fade-in">
+          <h1 className="text-4xl font-bold mb-8 neon-text-red">
+            <TypingText
+              text={homepageData.transitionMessage}
+              speed={50}
+              glitchChance={0.5}
+              typoChance={0.3}
+              conversionSteps={10}
+              conversionSpeed={20}
+              onComplete={handleTransitionComplete}
+            />
+          </h1>
+        </div>
+      )}
+
+      {currentPhase === 'choiceUI' && (
+        <InteractiveChoiceSection
+          choiceTitle={homepageData.choiceTitle}
+          deepThinkButtonText={homepageData.deepThinkButtonText}
+          justWatchButtonText={homepageData.justWatchButtonText}
+          deepThinkContent={homepageData.deepThinkContent}
+          justWatchContent={homepageData.justWatchContent}
+        />
+      )}
+    </main>
+  );
 }
