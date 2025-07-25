@@ -11,8 +11,7 @@ const ChoiceCard: React.FC<ChoiceCardProps> = ({ text, onClick, isSelected, isOt
   const cardClasses = `
     choice-card 
     px-10 py-5
-    border 
-    border-white 
+    border-2
     rounded-md
     cursor-pointer 
     transition-all 
@@ -21,9 +20,12 @@ const ChoiceCard: React.FC<ChoiceCardProps> = ({ text, onClick, isSelected, isOt
     text-white 
     bg-black 
     font-mono
-    hover:shadow-[0_0_15px_rgba(255,255,255,0.8)]
+    animate-pulse-glow
+    hover:animate-shake
+    hover:shadow-[0_0_25px_rgba(255,255,255,0.8)]
     hover:-translate-y-1
-    ${isSelected ? 'animate-floatUp' : ''}
+    hover:rotate-[-1deg]
+    ${isSelected ? 'animate-floatUp border-white' : 'border-white'}
     ${isOtherSelected ? 'animate-sinkDown' : ''}
   `;
 

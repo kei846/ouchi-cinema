@@ -51,7 +51,7 @@ const InteractiveChoiceSection: React.FC = () => {
       {stage === 'choose' && <TypingText text="Choose." />}
       
       {stage === 'cards' && (
-        <div className="flex flex-col md:flex-row gap-8">
+        <div className="flex flex-row justify-center gap-6">
           {choices.map((choice) => (
             <ChoiceCard 
               key={choice} 
@@ -65,7 +65,7 @@ const InteractiveChoiceSection: React.FC = () => {
       )}
 
       {stage === 'selected' && (
-        <div className="flex flex-col md:flex-row gap-8">
+        <div className="flex flex-row justify-center gap-6">
           {choices.map((choice) => (
             <ChoiceCard 
               key={choice} 
