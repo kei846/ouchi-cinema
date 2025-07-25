@@ -8,30 +8,33 @@ interface ChoiceCardProps {
 }
 
 const ChoiceCard: React.FC<ChoiceCardProps> = ({ text, onClick, isSelected, isOtherSelected }) => {
-  const cardClasses = `
-    choice-card 
-    px-10 py-5
+  const baseClasses = `
+    choice-card
+    flex-1
+    min-width[240px]
+    p-8
     border-2
-    rounded-md
-    cursor-pointer 
-    transition-all 
-    duration-300 
-    text-center 
-    text-white 
-    bg-black 
+    border-white
+    rounded-lg
+    cursor-pointer
+    transition-all
+    duration-300
+    text-center
+    text-gray-300
+    bg-black
     font-mono
-    animate-pulse-glow
-    hover:animate-shake
-    hover:shadow-[0_0_25px_rgba(255,255,255,0.8)]
-    hover:-translate-y-1
-    hover:rotate-[-1deg]
-    ${isSelected ? 'animate-floatUp border-white' : 'border-white'}
+    choice-card-idle
+    choice-card-hover
+  `;
+
+  const stateClasses = `
+    ${isSelected ? 'animate-floatUp' : ''}
     ${isOtherSelected ? 'animate-sinkDown' : ''}
   `;
 
   return (
-    <div className={cardClasses} onClick={onClick}>
-      <p className="text-xl">{text}</p>
+    <div className={`${baseClasses} ${stateClasses}`} onClick={onClick}>
+      <p className="text-lg md:text-xl">{text}</p>
     </div>
   );
 };
