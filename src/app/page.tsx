@@ -2,16 +2,25 @@
 
 import { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
+import InteractiveChoiceSection from '@/components/InteractiveChoiceSection';
 
 export default function HomePage() {
   const [isCracked, setIsCracked] = useState(false);
+  const [showChoiceSection, setShowChoiceSection] = useState(false);
 
   useEffect(() => {
-    const timer = setTimeout(() => {
+    const crackTimer = setTimeout(() => {
       setIsCracked(true);
     }, 4000); // 4秒後にクラック
 
-    return () => clearTimeout(timer);
+    const choiceTimer = setTimeout(() => {
+      setShowChoiceSection(true);
+    }, 5000); // 5秒後に選択セクション表示
+
+    return () => {
+      clearTimeout(crackTimer);
+      clearTimeout(choiceTimer);
+    };
   }, []);
 
   const text = "OUCHI-CINEMA";
@@ -26,6 +35,10 @@ export default function HomePage() {
     '0 0 45px rgba(72, 207, 173, 0.6)',
     '0 0 60px rgba(72, 207, 173, 0.4)',
   ].join(', ');
+
+  if (showChoiceSection) {
+    return <InteractiveChoiceSection />;
+  }
 
   return (
     <main className="relative flex flex-col items-center justify-center min-h-screen bg-black text-white font-mono p-4 overflow-hidden">

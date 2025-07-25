@@ -201,3 +201,42 @@ html, body {
 /* @keyframes glitch { ... } */
 /* @keyframes glitch-top { ... } */
 /* @keyframes glitch-bottom { ... } */
+
+@keyframes floatUp {
+  0% {
+    transform: translateY(0);
+    opacity: 1;
+  }
+  100% {
+    transform: translateY(-50px);
+    opacity: 1;
+  }
+}
+
+@keyframes sinkDown {
+  0% {
+    transform: translateY(0);
+    opacity: 1;
+  }
+  100% {
+    transform: translateY(50px);
+    opacity: 0;
+  }
+}
+
+.animate-floatUp {
+  animation: floatUp 1s forwards;
+}
+
+.animate-sinkDown {
+  animation: sinkDown 1s forwards;
+}
+
+.animate-fadeIn {
+  animation: fadeIn 2s forwards;
+}
+
+.animation-delay-2s {
+    animation-delay: 2s;
+}
+
