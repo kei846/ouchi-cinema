@@ -1,8 +1,7 @@
 'use client';
 
-import { useState } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
-import TypingText from './TypingText';
+import { useState, useEffect } from 'react';
+import { motion, AnimatePresence, useAnimation } from 'framer-motion';
 import { PortableText } from '@portabletext/react';
 
 interface InteractiveChoiceSectionProps {
@@ -21,6 +20,20 @@ export default function InteractiveChoiceSection({
   justWatchContent,
 }: InteractiveChoiceSectionProps) {
   const [choice, setChoice] = useState<string | null>(null);
+  const glitchControls = useAnimation();
+
+  useEffect(() => {
+    const interval = setInterval(async () => {
+      await glitchControls.start({
+        animation: 'thriller-glitch 0.5s ease-in-out',
+      });
+      await glitchControls.start({
+        animation: 'none',
+      });
+    }, 5000); // 5秒ごとにノイズ効果をトリガー
+
+    return () => clearInterval(interval);
+  }, [glitchControls]);
 
   const containerVariants = {
     hidden: { opacity: 0, scale: 0.95 },
@@ -41,7 +54,7 @@ export default function InteractiveChoiceSection({
   const buttonTap = { scale: 0.95 };
 
   return (
-    <section className="flex flex-col items-center justify-center w-full p-4">
+    <section className="p-4">
       <AnimatePresence mode="wait">
         {!choice ? (
           <motion.div
@@ -50,10 +63,15 @@ export default function InteractiveChoiceSection({
             initial="hidden"
             animate="visible"
             exit="exit"
-            className="text-center bg-black bg-opacity-20 backdrop-blur-lg p-12 rounded-2xl shadow-2xl border border-gray-700/50 max-w-2xl w-full"
+            className="bg-black bg-opacity-20 backdrop-blur-lg p-12 rounded-2xl shadow-2xl border border-gray-700/50"
           >
-            <motion.h1 variants={itemVariants} className="text-3xl md:text-4xl font-bold mb-8 text-green-400">
-              <TypingText text={choiceTitle} speed={100} />
+            <motion.h1
+              variants={itemVariants}
+              className="text-3xl md:text-4xl font-bold mb-8 text-green-400 glitch-text text-center"
+              data-text={choiceTitle} // グリッチ効果のためにdata-textを設定
+              animate={glitchControls} // useAnimationで制御
+            >
+              {/* テキストはdata-text属性でレンダリングされるため、ここでは空にする */}
             </motion.h1>
             <motion.div variants={itemVariants} className="flex flex-col md:flex-row gap-6">
               <motion.button

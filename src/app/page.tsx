@@ -2,98 +2,65 @@
 
 import { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
-import InteractiveChoiceSection from '@/components/InteractiveChoiceSection';
-import TypingText from '@/components/TypingText';
-import { client } from '@/sanity/lib/client';
-import { homepageQuery } from '@/sanity/lib/queries';
-
-interface HomepageData {
-  choiceTitle: string;
-  deepThinkButtonText: string;
-  justWatchButtonText: string;
-  deepThinkContent: any[];
-  justWatchContent: any[];
-}
 
 export default function HomePage() {
-  const [data, setData] = useState<HomepageData | null>(null);
-  const [isLoading, setIsLoading] = useState(true);
-  const [showChoice, setShowChoice] = useState(false);
+  const [isCracked, setIsCracked] = useState(false);
 
   useEffect(() => {
-    const fetchData = async () => {
-      try {
-        const sanityData = await client.fetch<HomepageData>(homepageQuery);
-        setData(sanityData);
-      } catch (error) {
-        console.error('Failed to fetch homepage data:', error);
-      } finally {
-        setIsLoading(false);
-      }
-    };
-    fetchData();
+    const timer = setTimeout(() => {
+      setIsCracked(true);
+    }, 4000); // 4秒後にクラック
+
+    return () => clearTimeout(timer);
   }, []);
 
-  const handleTypingComplete = () => {
-    setTimeout(() => {
-      setShowChoice(true);
-    }, 500); // 0.5秒待ってから選択肢を表示
-  };
+  const text = "OUCHI-CINEMA";
+  const letters = Array.from(text);
 
-  const containerVariants = {
-    hidden: { opacity: 0 },
-    visible: {
-      opacity: 1,
-      transition: { staggerChildren: 0.3 },
-    },
-  };
-
-  const itemVariants = {
-    hidden: { y: 20, opacity: 0 },
-    visible: { y: 0, opacity: 1, transition: { duration: 0.8 } },
-  };
-
-  if (isLoading) {
-    return (
-      <main className="flex flex-col items-center justify-center min-h-screen bg-gray-900 text-white font-mono p-4">
-        <TypingText text="Loading..." />
-      </main>
-    );
-  }
+  // ブラックミラー風の光るテキストシャドウ
+  const glowingShadow = [
+    '0 0 8px rgba(255, 255, 255, 0.7)',
+    '0 0 12px rgba(255, 255, 255, 0.7)',
+    '0 0 20px rgba(255, 255, 255, 0.7)',
+    '0 0 30px rgba(72, 207, 173, 0.8)', // ターコイズっぽい光
+    '0 0 45px rgba(72, 207, 173, 0.6)',
+    '0 0 60px rgba(72, 207, 173, 0.4)',
+  ].join(', ');
 
   return (
-    <main className="flex flex-col items-center min-h-screen bg-gray-900 text-white font-mono p-4 cinematic-bg">
+    <main className="relative flex flex-col items-center justify-center min-h-screen bg-black text-white font-mono p-4 overflow-hidden">
       <div className="scanline-overlay"></div>
 
-      {/* Hero Section */}
       <motion.div
         className="flex flex-col items-center justify-center w-full h-screen text-center"
-        variants={containerVariants}
-        initial="hidden"
-        animate="visible"
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        transition={{ duration: 1 }}
       >
-        <motion.h1 variants={itemVariants} className="text-5xl md:text-7xl font-bold text-green-400 glitch-text" data-text="How are you feeling today?">
-          <TypingText text="How are you feeling today?" onComplete={handleTypingComplete} />
+        <motion.h1
+          className="text-5xl md:text-8xl font-bold tracking-widest flex justify-center"
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1, textShadow: glowingShadow }}
+          transition={{ duration: 2, delay: 0.5 }}
+        >
+          {letters.map((letter, index) => (
+            <motion.span
+              key={index}
+              initial={{ opacity: 1 }}
+              animate={isCracked ? {
+                opacity: 0,
+                y: (Math.random() - 0.5) * 200,
+                x: (Math.random() - 0.5) * 600,
+                rotate: (Math.random() - 0.5) * 270,
+                scale: Math.random() * 1.2,
+              } : {}}
+              transition={{ duration: 0.8 + Math.random() * 0.4, ease: 'easeOut' }}
+            >
+              {letter}
+            </motion.span>
+          ))}
         </motion.h1>
       </motion.div>
-
-      {/* Choice Section (conditionally rendered) */}
-      {showChoice && data && (
-        <motion.div
-          className="w-full"
-          initial={{ opacity: 0, y: 50 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 1, ease: 'easeOut' }}
-        >
-          <InteractiveChoiceSection
-            choiceTitle={data.choiceTitle}
-            deepThinkButtonText={data.deepThinkButtonText}
-            justWatchButtonText={data.justWatchButtonText}
-            deepThinkContent={data.deepThinkContent}
-            justWatchContent={data.justWatchContent}
-          />
-        </motion.div>
-      )}
     </main>
   );
 }
