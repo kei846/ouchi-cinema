@@ -1,5 +1,6 @@
 
 import React, { useState, useEffect } from 'react';
+import { useRouter } from 'next/navigation';
 import TypingText from './TypingText';
 import ChoiceCard from './ChoiceCard';
 
@@ -7,20 +8,21 @@ import ChoiceCard from './ChoiceCard';
 interface Choice {
   text: string;
   glowColor: string;
+  slug: string;
 }
 
 const choiceOptions: Choice[] = [
-  { text: 'ただ観たい', glowColor: '#93c5fd' }, // soft blue
-  { text: '意味を考える', glowColor: '#fef08a' }, // soft yellow
-  { text: '音に沈む', glowColor: '#a78bfa' }, // dreamy purple
-  { text: '誰かになりたい', glowColor: '#fca5a5' }, // soft red
-  { text: 'ご褒美に', glowColor: '#fdba74' }, // warm orange
-  { text: '世界の終わり', glowColor: '#6ee7b7' }, // mint green
-  { text: 'もう戻れない', glowColor: '#fef08a' }, // soft yellow
-  { text: '遠くへ行きたい', glowColor: '#93c5fd' }, // soft blue
-  { text: '物語に酔う', glowColor: '#d8b4fe' }, // light purple
-  { text: 'すべてを忘れる', glowColor: '#fca5a5' }, // soft red
-  { text: '眠れない夜', glowColor: '#a78bfa' }, // dreamy purple
+  { text: 'ただ観たい', glowColor: '#93c5fd', slug: '/casual' },       // soft blue
+  { text: '意味を考える', glowColor: '#fef08a', slug: '/meaning' },     // soft yellow
+  { text: '音に沈む', glowColor: '#a78bfa', slug: '/sound' },          // dreamy purple
+  { text: '誰かになりたい', glowColor: '#fca5a5', slug: '/not-me' },   // soft red
+  { text: 'ご褒美に', glowColor: '#fdba74', slug: '/reward' },          // warm orange
+  { text: '世界の終わり', glowColor: '#6ee7b7', slug: '/end' },      // mint green
+  { text: 'もう戻れない', glowColor: '#fef08a', slug: '/nostalgia' },     // soft yellow
+  { text: '遠くへ行きたい', glowColor: '#93c5fd', slug: '/escape' },    // soft blue
+  { text: '物語に酔う', glowColor: '#d8b4fe', slug: '/story' },        // light purple
+  { text: 'すべて忘れる', glowColor: '#fca5a5', slug: '/reset' },      // soft red
+  { text: '眠れない夜', glowColor: '#a78bfa', slug: '/sleepless' },        // dreamy purple
 ];
 
 const getRandomChoices = (): Choice[] => {
@@ -32,6 +34,7 @@ const InteractiveChoiceSection: React.FC = () => {
   const [stage, setStage] = useState('choose');
   const [choices, setChoices] = useState<Choice[]>([]);
   const [selectedChoice, setSelectedChoice] = useState<Choice | null>(null);
+  const router = useRouter();
 
   useEffect(() => {
     if (stage === 'choose') {
@@ -47,9 +50,8 @@ const InteractiveChoiceSection: React.FC = () => {
     setSelectedChoice(choice);
     setStage('selected');
 
-    setTimeout(() => {
-        setStage('outro');
-    }, 2000); // Animation duration
+    // Immediately redirect to the article page
+    router.push(choice.slug);
   };
 
   return (
@@ -60,7 +62,7 @@ const InteractiveChoiceSection: React.FC = () => {
         <div className="flex w-full max-w-screen-md flex-row justify-center gap-8 px-4">
           {choices.map((choice) => (
             <ChoiceCard 
-              key={choice.text} 
+              key={choice.slug} 
               text={choice.text} 
               glowColor={choice.glowColor}
               onClick={() => handleChoice(choice)} 
@@ -75,12 +77,12 @@ const InteractiveChoiceSection: React.FC = () => {
         <div className="flex w-full max-w-screen-md flex-row justify-center gap-8 px-4">
           {choices.map((choice) => (
             <ChoiceCard 
-              key={choice.text} 
+              key={choice.slug} 
               text={choice.text} 
               glowColor={choice.glowColor}
               onClick={() => {}} 
-              isSelected={selectedChoice?.text === choice.text}
-              isOtherSelected={selectedChoice !== null && selectedChoice.text !== choice.text}
+              isSelected={selectedChoice?.slug === choice.slug}
+              isOtherSelected={selectedChoice !== null && selectedChoice.slug !== choice.slug}
             />
           ))}
         </div>

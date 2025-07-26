@@ -22,7 +22,10 @@ async function getPost(slug: string) {
     _id,
     title,
     "slug": slug.current,
-    body
+    body,
+    author_info,
+    contact_link,
+    copyright_notice
   }`, { slug });
   return post;
 }
@@ -41,6 +44,18 @@ export default async function PostPage({ params }: Props) {
       <div className="prose lg:prose-xl">
         <PortableText value={post.body} />
       </div>
+
+      {(post.author_info || post.contact_link || post.copyright_notice) && (
+        <div className="mt-12 pt-8 border-t border-gray-700 text-gray-400 text-sm">
+          {post.author_info && <p className="mb-2">{post.author_info}</p>}
+          {post.contact_link && (
+            <p className="mb-2">
+              Contact: <a href={post.contact_link} target="_blank" rel="noopener noreferrer" className="text-blue-400 hover:underline">{post.contact_link}</a>
+            </p>
+          )}
+          {post.copyright_notice && <p>{post.copyright_notice}</p>}
+        </div>
+      )}
     </div>
   );
 }

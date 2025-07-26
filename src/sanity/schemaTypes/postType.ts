@@ -32,6 +32,26 @@ export const postType = defineType({
       title: 'Body',
       type: 'blockContent',
     }),
+    defineField({
+      name: 'author_info',
+      title: 'Author Information',
+      type: 'text',
+      rows: 3,
+      description: 'Information about the author of the article.',
+    }),
+    defineField({
+      name: 'contact_link',
+      title: 'Contact Link',
+      type: 'url',
+      description: 'A URL for contacting the author or related information.',
+    }),
+    defineField({
+      name: 'copyright_notice',
+      title: 'Copyright Notice',
+      type: 'text',
+      rows: 2,
+      description: 'Copyright information for the article.',
+    }),
   ],
   preview: {
     select: {
