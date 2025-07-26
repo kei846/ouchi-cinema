@@ -10,17 +10,17 @@ interface Choice {
 }
 
 const choiceOptions: Choice[] = [
-  { text: 'ただ、観たいだけの夜', glowColor: '#93c5fd' }, // soft blue
-  { text: '意味を、考えてしまう夜', glowColor: '#fef08a' }, // soft yellow
-  { text: '音に沈みたい夜', glowColor: '#a78bfa' }, // dreamy purple
-  { text: '自分じゃない誰かになりたい夜', glowColor: '#fca5a5' }, // soft red
-  { text: '頑張った日のご褒美に', glowColor: '#fdba74' }, // warm orange
-  { text: '世界の終わりを見届けたい夜', glowColor: '#6ee7b7' }, // mint green
-  { text: 'もう戻れない夜', glowColor: '#fef08a' }, // soft yellow
-  { text: 'どこか遠くへ行きたい夜', glowColor: '#93c5fd' }, // soft blue
-  { text: '物語に酔いたい夜', glowColor: '#d8b4fe' }, // light purple
-  { text: 'すべてを忘れたい夜', glowColor: '#fca5a5' }, // soft red
-  { text: '眠れない夜に', glowColor: '#a78bfa' }, // dreamy purple
+  { text: 'ただ観たい', glowColor: '#93c5fd' }, // soft blue
+  { text: '意味を考える', glowColor: '#fef08a' }, // soft yellow
+  { text: '音に沈む', glowColor: '#a78bfa' }, // dreamy purple
+  { text: '誰かになりたい', glowColor: '#fca5a5' }, // soft red
+  { text: 'ご褒美に', glowColor: '#fdba74' }, // warm orange
+  { text: '世界の終わり', glowColor: '#6ee7b7' }, // mint green
+  { text: 'もう戻れない', glowColor: '#fef08a' }, // soft yellow
+  { text: '遠くへ行きたい', glowColor: '#93c5fd' }, // soft blue
+  { text: '物語に酔う', glowColor: '#d8b4fe' }, // light purple
+  { text: 'すべてを忘れる', glowColor: '#fca5a5' }, // soft red
+  { text: '眠れない夜', glowColor: '#a78bfa' }, // dreamy purple
 ];
 
 const getRandomChoices = (): Choice[] => {
