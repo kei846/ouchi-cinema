@@ -266,48 +266,37 @@ html, body {
 
 /* --- Glow Effect Text Buttons --- */
 .btn-memory {
-  position: relative;
+  font-size: 1.25rem;
+  color: white;
+  padding: 1rem 2rem;
   background: none;
   border: none;
-  padding: 1rem 2rem;
-  color: white;
-  font-size: 1.25rem; /* 20px */
-  font-weight: bold;
-  font-family: monospace;
+  border-radius: 0.75rem;
+  position: relative;
+  text-shadow: 0 0 4px rgba(255, 255, 255, 0.3); /* softer glow */
+  transition: all 0.3s ease;
   cursor: pointer;
-  transition: all 0.3s ease-in-out;
-  text-shadow:
-    0 0 4px #fff,
-    0 0 8px var(--glow-color),
-    0 0 12px var(--glow-color);
 }
 
 .btn-memory::before {
   content: '';
   position: absolute;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-  width: 100%;
-  height: 100%;
-  background: var(--glow-color);
-  filter: blur(25px);
-  opacity: 0;
-  transition: opacity 0.4s ease-in-out;
+  inset: -8px;
+  border-radius: 1rem;
+  background: radial-gradient(circle, var(--glow-color) 0%, transparent 70%);
+  opacity: 0.4;
+  filter: blur(6px);
   z-index: -1;
-  border-radius: 0.5rem;
-}
-
-.btn-memory:hover {
-  transform: translateY(-4px);
-  color: #fff;
-  text-shadow:
-    0 0 6px #fff,
-    0 0 12px var(--glow-color),
-    0 0 20px var(--glow-color);
+  transition: opacity 0.3s ease, transform 0.3s ease;
 }
 
 .btn-memory:hover::before {
-  opacity: 0.5;
+  opacity: 0.6;
+  transform: scale(1.05);
+}
+
+.btn-memory:hover {
+  text-shadow: 0 0 6px var(--glow-color);
+  transform: translateY(-2px);
 }
 
