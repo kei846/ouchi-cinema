@@ -48,8 +48,6 @@ const InteractiveChoiceSection: React.FC = () => {
 
   const handleChoice = (choice: Choice) => {
     setSelectedChoice(choice);
-    setStage('selected');
-
     // Immediately redirect to the article page
     router.push(choice.slug);
   };
@@ -59,41 +57,20 @@ const InteractiveChoiceSection: React.FC = () => {
       {stage === 'choose' && <TypingText text="Choose." />}
       
       {stage === 'cards' && (
-        <div className="flex w-full max-w-screen-md flex-row justify-center gap-8 px-4">
+        <div className="jrpg-choice-container">
           {choices.map((choice) => (
             <ChoiceCard 
               key={choice.slug} 
               text={choice.text} 
-              glowColor={choice.glowColor}
               onClick={() => handleChoice(choice)} 
-              isSelected={false}
-              isOtherSelected={false}
-            />
-          ))}
-        </div>
-      )}
-
-      {stage === 'selected' && (
-        <div className="flex w-full max-w-screen-md flex-row justify-center gap-8 px-4">
-          {choices.map((choice) => (
-            <ChoiceCard 
-              key={choice.slug} 
-              text={choice.text} 
-              glowColor={choice.glowColor}
-              onClick={() => {}} 
               isSelected={selectedChoice?.slug === choice.slug}
-              isOtherSelected={selectedChoice !== null && selectedChoice.slug !== choice.slug}
             />
           ))}
         </div>
       )}
 
-      {stage === 'outro' && (
-          <div className="text-white animate-fadeIn">
-              <p className="text-2xl mb-4">{selectedChoice?.text}を選んだあなたへ</p>
-              <a href="#" className="text-lg underline hover:text-gray-400">メインコンテンツへ</a>
-          </div>
-      )}
+      {/* Selected stage is now handled by immediate redirect, so no separate rendering needed */}
+      {/* Outro stage is also handled by immediate redirect */}
     </div>
   );
 };

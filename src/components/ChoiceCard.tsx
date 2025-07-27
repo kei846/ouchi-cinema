@@ -4,21 +4,18 @@ interface ChoiceCardProps {
   text: string;
   onClick: () => void;
   isSelected: boolean;
-  isOtherSelected: boolean;
-  glowColor: string;
 }
 
-const ChoiceCard: React.FC<ChoiceCardProps> = ({ text, onClick, isSelected, isOtherSelected, glowColor }) => {
+const ChoiceCard: React.FC<ChoiceCardProps> = ({ text, onClick, isSelected }) => {
   const baseClasses = `
-    btn-memory
-    ${isSelected ? 'animate-floatUp' : ''}
-    ${isOtherSelected ? 'animate-sinkDown' : ''}
+    jrpg-choice-button
+    ${isSelected ? 'selected' : ''}
   `;
 
   return (
-    <div className={baseClasses} onClick={onClick} style={{ '--glow-color': glowColor } as React.CSSProperties}>
+    <button className={baseClasses} onClick={onClick}>
       {text}
-    </div>
+    </button>
   );
 };
 

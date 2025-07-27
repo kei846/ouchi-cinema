@@ -264,39 +264,57 @@ html, body {
   animation: subtle-shake 0.4s infinite ease-in-out alternate;
 }
 
-/* --- Glow Effect Text Buttons --- */
-.btn-memory {
-  font-size: 1.25rem;
-  color: white;
-  padding: 1rem 2rem;
+
+/* --- JRPG Choice Buttons --- */
+@import url('https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap');
+
+.jrpg-choice-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  background-color: black;
+  padding: 24px;
+  border: 1.5px solid white;
+  box-sizing: border-box;
+}
+
+.jrpg-choice-button {
   background: none;
   border: none;
-  border-radius: 0.75rem;
-  position: relative;
-  text-shadow: 0 0 4px rgba(255, 255, 255, 0.3); /* softer glow */
-  transition: all 0.3s ease;
+  color: white;
+  font-family: 'Press Start 2P', cursive;
+  font-size: 1rem;
+  padding: 24px;
   cursor: pointer;
+  text-align: left;
+  width: 100%; /* Ensure full width within container */
+  white-space: nowrap; /* Prevent text wrapping */
 }
 
-.btn-memory::before {
+.jrpg-choice-button.selected {
+  color: white; /* Ensure text color remains white when selected */
+}
+
+.jrpg-choice-button::before {
   content: '';
-  position: absolute;
-  inset: -8px;
-  border-radius: 1rem;
-  background: radial-gradient(circle, var(--glow-color) 0%, transparent 70%);
-  opacity: 0.4;
-  filter: blur(6px);
-  z-index: -1;
-  transition: opacity 0.3s ease, transform 0.3s ease;
+  display: inline-block;
+  width: 0;
+  margin-right: 0;
+  transition: margin-right 0.1s ease-in-out;
 }
 
-.btn-memory:hover::before {
-  opacity: 0.6;
-  transform: scale(1.05);
+.jrpg-choice-button.selected::before {
+  content: '▶';
+  margin-right: 10px;
 }
 
-.btn-memory:hover {
-  text-shadow: 0 0 6px var(--glow-color);
-  transform: translateY(-2px);
+/* Mobile responsiveness */
+@media (max-width: 768px) {
+  .jrpg-choice-button {
+    font-size: 0.8rem; /* Scale down font on mobile */
+    padding: 16px;
+  }
 }
+
 
