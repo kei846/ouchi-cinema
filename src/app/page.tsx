@@ -2,7 +2,9 @@
 
 import { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
-import InteractiveChoiceSection from '@/components/InteractiveChoiceSection';
+import dynamic from 'next/dynamic';
+
+const InteractiveChoiceSection = dynamic(() => import('@/components/InteractiveChoiceSection'), { ssr: false });
 
 export default function HomePage() {
   const [isCracked, setIsCracked] = useState(false);
