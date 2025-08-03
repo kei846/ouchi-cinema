@@ -43,6 +43,9 @@ const config: Config = {
         'neon-purple': 'var(--neon-purple)',
         'neon-red': 'var(--neon-red)',
       },
+      fontFamily: {
+        'press-start': ['"Press Start 2P"', 'cursive'],
+      },
     },
   },
   plugins: [],

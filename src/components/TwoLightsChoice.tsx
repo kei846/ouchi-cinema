@@ -1,10 +1,9 @@
 
 "use client";
 
-import React, { Suspense, useState } from 'react';
-import { Canvas, useFrame } from '@react-three/fiber';
+import React, { useState, useEffect, useCallback, Suspense, useRef, useMemo } from 'react';
 import { useRouter } from 'next/navigation';
-import MagicalParticles from './MagicalParticles';
+import { Canvas, useFrame } from '@react-three/fiber';
 import { Text, SpotLight, useDepthBuffer } from '@react-three/drei';
 import * as THREE from 'three';
 
@@ -13,7 +12,7 @@ const choices = [
   { label: "ある映画について、もっと深く。", path: "/category/deep-think" },
 ];
 
-// --- Helper Components from TwoLightsChoice ---
+// --- Helper Components (unchanged, but kept here for context) ---
 interface MovingSpotLightProps {
   position: [number, number, number];
   targetPosition: [number, number, number];
@@ -21,11 +20,11 @@ interface MovingSpotLightProps {
 }
 
 const MovingSpotLight: React.FC<MovingSpotLightProps> = ({ position, targetPosition, isSelected }) => {
-  const light = React.useRef<THREE.SpotLight>(null!);
-  const target = React.useMemo(() => new THREE.Object3D(), []);
+  const light = useRef<THREE.SpotLight>(null!);
+  const target = useMemo(() => new THREE.Object3D(), []);
   const [intensity, setIntensity] = useState(0);
 
-  React.useEffect(() => {
+  useEffect(() => {
     target.position.set(...targetPosition);
     if (light.current) {
       light.current.target = target;
@@ -52,6 +51,7 @@ const FloatingText: React.FC<FloatingTextProps> = ({ children, position, isSelec
   const [opacity, setOpacity] = useState(0);
 
   useFrame(() => {
+    // Animate opacity value
     setOpacity(THREE.MathUtils.lerp(opacity, isSelected ? 1 : 0.6, 0.1));
   });
 
@@ -62,11 +62,15 @@ const FloatingText: React.FC<FloatingTextProps> = ({ children, position, isSelec
   );
 };
 
-// --- Main Scene Component from TwoLightsChoice ---
-const Scene = () => {
-  const [selectedIndex, setSelectedIndex] = useState(0);
-  const router = useRouter();
-  useDepthBuffer({ frames: 1 });
+// --- Main Scene Component (Refactored) ---
+interface SceneProps {
+  selectedIndex: number;
+  router: ReturnType<typeof useRouter>;
+  setSelectedIndex: React.Dispatch<React.SetStateAction<number>>;
+}
+
+const Scene: React.FC<SceneProps> = ({ selectedIndex, router, setSelectedIndex }) => {
+  const depthBuffer = useDepthBuffer({ frames: 1 });
 
   return (
     <>
@@ -97,20 +101,32 @@ const Scene = () => {
   );
 };
 
+// --- Top-Level Component (Refactored) ---
+const TwoLightsChoice: React.FC = () => {
+  const [selectedIndex, setSelectedIndex] = useState(0);
+  const [isVisible, setIsVisible] = useState(false);
+  const router = useRouter();
 
-const InteractiveChoiceSection: React.FC = () => {
+  const handleKeyDown = useCallback((e: KeyboardEvent) => {
+    if (e.key === 'ArrowLeft' || e.key === 'ArrowRight') {
+      setSelectedIndex((prev) => (prev === 0 ? 1 : 0));
+    } else if (e.key === 'Enter') {
+      router.push(choices[selectedIndex].path);
+    }
+  }, [router, selectedIndex]);
+
+  useEffect(() => {
+    const timer = setTimeout(() => setIsVisible(true), 100);
+    window.addEventListener('keydown', handleKeyDown);
+    return () => {
+      clearTimeout(timer);
+      window.removeEventListener('keydown', handleKeyDown);
+    };
+  }, [handleKeyDown]);
+
   return (
-    <div className="w-full h-screen bg-black">
-      <Canvas camera={{ position: [0, 0, 15], fov: 75 }}>
-        <ambientLight intensity={0.2} />
-        <pointLight position={[10, 10, 10]} intensity={0.5} />
-        <Suspense fallback={null}>
-          <MagicalParticles />
-          <Scene />
-        </Suspense>
-      </Canvas>
-    </div>
+    <Scene selectedIndex={selectedIndex} router={router} setSelectedIndex={setSelectedIndex} />
   );
 };
 
-export default InteractiveChoiceSection;
+export default TwoLightsChoice;
