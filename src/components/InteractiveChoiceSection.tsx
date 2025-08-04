@@ -1,62 +1,54 @@
-
 "use client";
 
 import React, { Suspense, useState } from 'react';
-import { Canvas, useFrame } from '@react-three/fiber';
+import { Canvas, useFrame, useThree } from '@react-three/fiber';
 import { useRouter } from 'next/navigation';
 import MagicalParticles from './MagicalParticles';
-import { Text, SpotLight, useDepthBuffer } from '@react-three/drei';
+import { Text, useDepthBuffer } from '@react-three/drei';
 import * as THREE from 'three';
+import { EffectComposer, Bloom } from '@react-three/postprocessing';
 
 const choices = [
-  { label: "今夜、最高の映画を。", path: "/category/just-watch" },
-  { label: "ある映画について、もっと深く。", path: "/category/deep-think" },
+  { label: "運命の一本をみつける。", path: "/category/just-watch" },
+  { label: "映画の裏側へ。", path: "/category/deep-think" },
 ];
 
 // --- Helper Components from TwoLightsChoice ---
-interface MovingSpotLightProps {
-  position: [number, number, number];
-  targetPosition: [number, number, number];
-  isSelected: boolean;
-}
 
-const MovingSpotLight: React.FC<MovingSpotLightProps> = ({ position, targetPosition, isSelected }) => {
-  const light = React.useRef<THREE.SpotLight>(null!);
-  const target = React.useMemo(() => new THREE.Object3D(), []);
-  const [intensity, setIntensity] = useState(0);
-
-  React.useEffect(() => {
-    target.position.set(...targetPosition);
-    if (light.current) {
-      light.current.target = target;
-    }
-  }, [target, targetPosition]);
-
-  useFrame(() => {
-    setIntensity(THREE.MathUtils.lerp(intensity, isSelected ? 8 : 3, 0.1));
-    if (light.current) {
-      light.current.intensity = intensity;
-    }
-  });
-
-  return <SpotLight ref={light} position={position} target={target} angle={0.4} penumbra={0.6} distance={15} castShadow />;
-};
 
 interface FloatingTextProps {
   children: React.ReactNode;
   position: [number, number, number];
   isSelected: boolean;
+  letterSpacing?: number; // Optional letterSpacing prop
 }
 
-const FloatingText: React.FC<FloatingTextProps> = ({ children, position, isSelected }) => {
+const FloatingText: React.FC<FloatingTextProps> = ({ children, position, isSelected, letterSpacing: propLetterSpacing }) => {
   const [opacity, setOpacity] = useState(0);
+  const { viewport } = useThree();
+  // Adjust font size based on viewport width, with min/max caps
+  const fontSize = Math.max(0.25, Math.min(0.5, viewport.width / 12));
+  const finalLetterSpacing = propLetterSpacing !== undefined ? propLetterSpacing : 0.1;
 
   useFrame(() => {
     setOpacity(THREE.MathUtils.lerp(opacity, isSelected ? 1 : 0.6, 0.1));
   });
 
   return (
-    <Text position={position} fontSize={0.4} letterSpacing={0.1} color="white" fillOpacity={opacity}>
+    <Text
+      position={position}
+      fontSize={fontSize}
+      letterSpacing={finalLetterSpacing}
+      color="white"
+      fillOpacity={opacity}
+      emissive="white"
+      emissiveIntensity={1}
+      whiteSpace="normal"
+      textAlign="center"
+      anchorX="center"
+      anchorY="middle"
+      maxWidth={viewport.width * 0.4} // Ensure text wraps within a portion of the screen
+    >
       {children}
     </Text>
   );
@@ -66,13 +58,18 @@ const FloatingText: React.FC<FloatingTextProps> = ({ children, position, isSelec
 const Scene = () => {
   const [selectedIndex, setSelectedIndex] = useState(0);
   const router = useRouter();
+  const { viewport } = useThree();
   useDepthBuffer({ frames: 1 });
+
+  // Calculate horizontal spread based on viewport width to ensure it's responsive
+  const horizontalSpread = viewport.width * 0.35;
+  const lightHorizontalSpread = viewport.width * 0.4;
 
   return (
     <>
       <color attach="background" args={['black']} />
       <fog attach="fog" args={['black', 10, 25]} />
-      <ambientLight intensity={0.2} />
+      <ambientLight intensity={0} />
 
       <mesh rotation={[-Math.PI / 2, 0, 0]} position={[0, -2, 0]} receiveShadow>
         <planeGeometry args={[100, 100]} />
@@ -80,18 +77,20 @@ const Scene = () => {
       </mesh>
 
       <Suspense fallback={null}>
-        {choices.map((choice, index) => (
-          <group key={choice.path} onPointerDown={() => router.push(choice.path)} onPointerOver={() => setSelectedIndex(index)}>
-            <MovingSpotLight
-              position={[index === 0 ? -5 : 5, 8, 2]}
-              targetPosition={[index === 0 ? -3 : 3, -2, 0]}
-              isSelected={selectedIndex === index}
-            />
-            <FloatingText position={[index === 0 ? -4 : 4, 0, 0]} isSelected={selectedIndex === index}>
-              {choice.label}
-            </FloatingText>
-          </group>
-        ))}
+        {choices.map((choice, index) => {
+          console.log(`Rendering choice: ${choice.label} at index: ${index}`);
+          const textPositionY = index === 0 ? 1 : -1; // Fixed Y positions for clear separation
+
+          return (
+            <group key={choice.path} onPointerDown={() => router.push(choice.path)} onPointerOver={() => setSelectedIndex(index)}>
+              
+              <FloatingText position={[0, textPositionY, 0]} isSelected={selectedIndex === index}>
+                {choice.label}
+              </FloatingText>
+            </group>
+          );
+        })}
+        
       </Suspense>
     </>
   );
@@ -106,7 +105,10 @@ const InteractiveChoiceSection: React.FC = () => {
         <pointLight position={[10, 10, 10]} intensity={0.5} />
         <Suspense fallback={null}>
           <MagicalParticles />
-          <Scene />
+          <EffectComposer>
+            <Bloom luminanceThreshold={0} luminanceSmoothing={0.9} height={300} />
+            <Scene />
+          </EffectComposer>
         </Suspense>
       </Canvas>
     </div>
