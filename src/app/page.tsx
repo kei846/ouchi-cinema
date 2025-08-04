@@ -9,8 +9,18 @@ const InteractiveChoiceSection = dynamic(() => import('@/components/InteractiveC
 export default function HomePage() {
   const [isCracked, setIsCracked] = useState(false);
   const [showChoiceSection, setShowChoiceSection] = useState(false);
+  const [windowWidth, setWindowWidth] = useState(0);
 
   useEffect(() => {
+    const handleResize = () => {
+      setWindowWidth(window.innerWidth);
+    };
+
+    if (typeof window !== 'undefined') {
+      window.addEventListener('resize', handleResize);
+      handleResize();
+    }
+
     const crackTimer = setTimeout(() => {
       setIsCracked(true);
     }, 4000); // 4秒後にクラック
@@ -20,6 +30,9 @@ export default function HomePage() {
     }, 5000); // 5秒後に選択セクション表示
 
     return () => {
+      if (typeof window !== 'undefined') {
+        window.removeEventListener('resize', handleResize);
+      }
       clearTimeout(crackTimer);
       clearTimeout(choiceTimer);
     };
@@ -27,6 +40,7 @@ export default function HomePage() {
 
   const text = "OUCHI-CINEMA";
   const letters = Array.from(text);
+  const xRange = windowWidth > 768 ? 600 : windowWidth * 0.8;
 
   // ブラックミラー風の光るテキストシャドウ
   const glowingShadow = [
@@ -65,7 +79,7 @@ export default function HomePage() {
               animate={isCracked ? {
                 opacity: 0,
                 y: (Math.random() - 0.5) * 200,
-                x: (Math.random() - 0.5) * 600,
+                x: (Math.random() - 0.5) * xRange,
                 rotate: (Math.random() - 0.5) * 270,
                 scale: Math.random() * 1.2,
               } : {}}
