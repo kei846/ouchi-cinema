@@ -41,10 +41,12 @@ export default async function PostPage({ params }: Props) {
   }
 
   return (
-    <div className="container mx-auto px-4 py-8">
-      <h1 className="text-3xl font-bold mb-4">{post.title}</h1>
-      <div className="prose lg:prose-xl">
-        <PortableText value={post.body} />
+    <div className="bg-white text-black min-h-screen">
+      <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-12">
+        <article className="prose lg:prose-xl max-w-none">
+          <h1 className="text-3xl md:text-4xl font-bold mb-8 text-gray-900">{post.title}</h1>
+          <PortableText value={post.body} />
+        </article>
       </div>
     </div>
   );
