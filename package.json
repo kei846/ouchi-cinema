@@ -7,7 +7,7 @@
     "build": "next build --no-lint",
     "start": "next start",
     "lint": "next lint",
-    "studio": "cross-env NEXT_PUBLIC_SANITY_DATASET=production NEXT_PUBLIC_SANITY_PROJECT_ID=yrv186yu sanity dev",
+    "studio": "cross-env NEXT_PUBLIC_SANITY_DATASET=production NEXT_PUBLIC_SANITY_PROJECT_ID=yrv186yu sanity dev --port 3334",
     "build-import": "tsc -p tsconfig.scripts.json",
     "start-import": "node dist-scripts/import-wordpress.js"
   },

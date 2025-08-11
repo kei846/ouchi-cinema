@@ -9,7 +9,7 @@ import * as THREE from 'three';
 import { EffectComposer, Bloom } from '@react-three/postprocessing';
 
 const choices = [
-  { label: "運命の一本をみつける。", path: "/category/just-watch" },
+  { label: "運命の一本をみつける。", path: "/post/destiny-movie-to-light-up-your-heart" },
   { label: "映画の裏側へ。", path: "/category/deep-think" },
 ];
 
