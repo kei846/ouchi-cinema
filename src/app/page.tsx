@@ -1,4 +1,3 @@
-
 import React from 'react';
 
 export default function HomePage() {
@@ -52,25 +51,30 @@ export default function HomePage() {
             margin: 0 auto;
         }
 
-        /* --- 1. Intro Section (Curtain Animation) --- */
-        .curtain {
+        /* --- 1. Intro Section --- */
+
+        /* 【重要修正】ゴールドの扉のスタイル */
+        .door {
             position: fixed;
             top: 0;
             width: 50vw;
             height: 100vh;
-            background-color: #8B0000; /* Dark Red */
+            background: linear-gradient(to right, #c69326, #f2c94c, #c69326);
             z-index: 1000;
-            transition: transform 1.5s cubic-bezier(0.77, 0, 0.175, 1);
+            transition: transform 2s cubic-bezier(0.77, 0, 0.175, 1);
+            box-shadow: 0 0 30px rgba(0,0,0,0.5);
         }
-        .curtain-left {
+        .door-left {
             left: 0;
             transform-origin: left;
+            border-right: 2px solid #8c6815;
         }
-        .curtain-right {
+        .door-right {
             right: 0;
             transform-origin: right;
+            border-left: 2px solid #8c6815;
         }
-        .curtain.open {
+        .door.open {
             transform: scaleX(0);
         }
 
@@ -82,33 +86,27 @@ export default function HomePage() {
             align-items: center;
             position: relative;
             text-align: center;
+            /* 【重要修正】初期状態では非表示 */
+            opacity: 0;
+            transition: opacity 1.5s ease-in-out;
+        }
+        /* 【重要修正】扉が開いた後に表示させる */
+        .intro-section.visible {
+            opacity: 1;
         }
 
+        /* 【重要修正】白く発光するネオンロゴ */
         .intro-section .logo {
             font-family: var(--font-heading);
             font-size: 4rem;
-            color: var(--color-accent-pink);
+            color: #FFFFFF;
             text-shadow:
-                0 0 5px var(--color-accent-pink),
-                0 0 10px var(--color-accent-pink),
-                0 0 20px var(--color-accent-pink),
+                0 0 5px #fff,
+                0 0 10px #fff,
+                0 0 20px #fff,
                 0 0 40px var(--color-accent-cyan),
+                0 0 70px var(--color-accent-cyan),
                 0 0 80px var(--color-accent-cyan);
-            animation: flicker 3s infinite alternate;
-        }
-
-        @keyframes flicker {
-            0%, 18%, 22%, 25%, 53%, 57%, 100% {
-                text-shadow:
-                    0 0 4px var(--color-accent-pink),
-                    0 0 11px var(--color-accent-pink),
-                    0 0 19px var(--color-accent-pink),
-                    0 0 40px var(--color-accent-cyan),
-                    0 0 80px var(--color-accent-cyan);
-            }
-            20%, 24%, 55% {
-                text-shadow: none;
-            }
         }
 
         .intro-section .tagline {
@@ -144,15 +142,26 @@ export default function HomePage() {
         .now-showing-section {
             background: linear-gradient(rgba(10, 15, 45, 0.9), rgba(10, 15, 45, 0.9)), url('https://www.transparenttextures.com/patterns/dark-denim-3.png');
         }
+
+        @keyframes neon-blink {
+            0%, 100% {
+                text-shadow: 0 0 5px #fff, 0 0 10px #fff, 0 0 15px var(--color-main);
+                color: var(--color-main);
+            }
+            50% {
+                text-shadow: 0 0 2px #fff, 0 0 5px #fff, 0 0 8px var(--color-main);
+                color: #f5d478;
+            }
+        }
+
         .now-showing-section h2 {
             font-size: 3rem;
-            color: var(--color-main);
             border: 4px solid var(--color-main);
             padding: 1rem 2rem;
             display: inline-block;
             box-shadow: 0 0 15px var(--color-main), inset 0 0 15px var(--color-main);
             background-color: #1a1a1a;
-            text-shadow: 0 0 5px #fff, 0 0 10px #fff, 0 0 15px var(--color-main);
+            animation: neon-blink 2s infinite linear;
         }
 
         .tabs {
@@ -190,39 +199,36 @@ export default function HomePage() {
 
         .movie-card {
             background-color: #1a203c;
-            border: 8px solid #4a3a2a; /* Wood-like frame */
+            border: 8px solid #4a3a2a;
             border-radius: 4px;
-            padding: 1rem;
-            text-align: center;
+            padding: 2rem;
             transition: all 0.3s ease;
-            box-shadow: 0 10px 20px rgba(0,0,0,0.4),
-                        inset 0 0 15px rgba(0,0,0,0.5);
+            box-shadow: 0 10px 20px rgba(0,0,0,0.4), inset 0 0 15px rgba(0,0,0,0.5);
+            min-height: 250px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            text-decoration: none;
+            color: var(--color-text);
         }
 
         .movie-card:hover {
             transform: translateY(-10px);
             border-color: var(--color-main);
-            box-shadow: 0 15px 30px rgba(0,0,0,0.6),
-                        0 0 20px var(--color-main),
-                        inset 0 0 15px rgba(0,0,0,0.5);
-        }
-
-        .movie-card img {
-            width: 100%;
-            height: 350px;
-            object-fit: cover;
-            border: 2px solid var(--color-main);
+            box-shadow: 0 15px 30px rgba(0,0,0,0.6), 0 0 20px var(--color-main), inset 0 0 15px rgba(0,0,0,0.5);
         }
 
         .movie-card h3 {
-            margin-top: 1rem;
-            font-size: 1.5rem;
+            font-size: 1.8rem;
+            margin: 0;
         }
 
         .movie-card .hashtags {
-            margin-top: 0.5rem;
+            margin-top: 1rem;
             color: var(--color-accent-cyan);
-            font-size: 0.9rem;
+            font-size: 1rem;
         }
 
         /* --- 3. Ticket Counter Section --- */
@@ -256,6 +262,7 @@ export default function HomePage() {
             cursor: pointer;
             transition: all 0.3s ease;
             border-radius: 50px;
+            text-decoration: none;
         }
         .option-btn:hover {
             background-color: var(--color-accent-pink);
@@ -273,6 +280,7 @@ export default function HomePage() {
             border-radius: 8px;
             border: 2px solid transparent;
             transition: border-color 0.3s;
+            text-decoration: none;
         }
         .vod-logo:hover {
             border-color: var(--color-accent-cyan);
@@ -292,6 +300,7 @@ export default function HomePage() {
             position: relative;
             transition: all 0.2s ease;
             box-shadow: 0 6px #a88634;
+            text-decoration: none;
         }
         .ticket-lever:hover {
             box-shadow: 0 4px #a88634;
@@ -316,7 +325,7 @@ export default function HomePage() {
             margin-top: 3rem;
         }
         .article-quote {
-            background-color: #f5f5dc; /* Beige */
+            background-color: #f5f5dc;
             color: #333;
             padding: 2rem;
             border-radius: 4px;
@@ -409,9 +418,6 @@ export default function HomePage() {
 
         /* --- Responsive Design --- */
         @media (max-width: 768px) {
-            h1, h2, h3 {
-                font-size: 8vw;
-            }
             .intro-section .logo {
                 font-size: 10vw;
             }
@@ -427,10 +433,10 @@ export default function HomePage() {
         }
         `}
       </style>
-      
-      {/* Curtain Effect */}
-      <div className="curtain curtain-left"></div>
-      <div className="curtain curtain-right"></div>
+
+      {/* 【重要修正】ゴールドの扉 */}
+      <div className="door door-left"></div>
+      <div className="door door-right"></div>
 
       {/* 1. Intro Section */}
       <section id="intro" className="intro-section">
@@ -453,22 +459,18 @@ export default function HomePage() {
               </div>
               <div className="movie-cards">
                   <a href="#" className="movie-card" data-genre="drama">
-                      <img src="https://via.placeholder.com/300x450/0A0F2D/F2C94C?text=The+Great+Story" alt="映画ポスター1" />
                       <h3>偉大なる物語</h3>
                       <p className="hashtags">#感動 #人生の岐路</p>
                   </a>
                   <a href="#" className="movie-card" data-genre="comedy">
-                      <img src="https://via.placeholder.com/300x450/0A0F2D/F2C94C?text=Laugh+Factory" alt="映画ポスター2" />
                       <h3>笑いの工場</h3>
                       <p className="hashtags">#爆笑 #ストレス発散</p>
                   </a>
                   <a href="#" className="movie-card" data-genre="mystery">
-                      <img src="https://via.placeholder.com/300x450/0A0F2D/F2C94C?text=Shadow+Detective" alt="映画ポスター3" />
                       <h3>影の探偵</h3>
                       <p className="hashtags">#謎解き #驚きの結末</p>
                   </a>
                    <a href="#" className="movie-card" data-genre="drama">
-                      <img src="https://via.placeholder.com/300x450/0A0F2D/F2C94C?text=Tears+of+Sun" alt="映画ポスター4" />
                       <h3>太陽の涙</h3>
                       <p className="hashtags">#家族愛 #泣ける</p>
                   </a>
@@ -483,10 +485,10 @@ export default function HomePage() {
               <div className="step">
                   <h3>STEP 1: 今日の気分は？</h3>
                   <div className="options">
-                      <button className="option-btn">号泣したい</button>
-                      <button className="option-btn">スカッとしたい</button>
-                      <button className="option-btn">恋したい</button>
-                      <button className="option-btn">考えさせられたい</button>
+                      <a href="#" className="option-btn">号泣したい</a>
+                      <a href="#" className="option-btn">スカッとしたい</a>
+                      <a href="#" className="option-btn">恋したい</a>
+                      <a href="#" className="option-btn">考えさせられたい</a>
                   </div>
               </div>
               <div className="step">
@@ -544,14 +546,19 @@ export default function HomePage() {
       </footer>
 
       <script dangerouslySetInnerHTML={{ __html: `
-        // --- Curtain Animation ---
+        // 【重要修正】扉を開けるアニメーションの制御
         window.addEventListener('load', () => {
-            const curtains = document.querySelectorAll('.curtain');
+            const doors = document.querySelectorAll('.door');
+            const introSection = document.querySelector('.intro-section');
+
+            // 1.5秒後にアニメーション開始
             setTimeout(() => {
-                curtains.forEach(curtain => {
-                    curtain.classList.add('open');
+                doors.forEach(door => {
+                    door.classList.add('open');
                 });
-            }, 500); // 0.5秒待ってから開く
+                // 扉が開き始めたらイントロを見せる
+                introSection.classList.add('visible');
+            }, 1500);
         });
 
         // --- Now Showing Tab Functionality ---
@@ -560,17 +567,14 @@ export default function HomePage() {
 
         tabs.forEach(tab => {
             tab.addEventListener('click', () => {
-                // Remove active class from all tabs
                 tabs.forEach(t => t.classList.remove('active'));
-                // Add active class to the clicked tab
                 tab.classList.add('active');
-
                 const selectedGenre = tab.getAttribute('data-genre');
 
                 movieCards.forEach(card => {
                     const cardGenre = card.getAttribute('data-genre');
                     if (selectedGenre === 'all' || selectedGenre === cardGenre) {
-                        card.style.display = 'block';
+                        card.style.display = 'flex';
                     } else {
                         card.style.display = 'none';
                     }
