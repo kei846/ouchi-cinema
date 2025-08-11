@@ -1,3 +1,4 @@
+
 import React from 'react';
 
 export default function HomePage() {
@@ -53,28 +54,30 @@ export default function HomePage() {
 
         /* --- 1. Intro Section --- */
 
-        /* 【重要修正】ゴールドの扉のスタイル */
-        .door {
+        /* 【最重要修正】赤いカーテンのスタイル */
+        .curtain {
             position: fixed;
             top: 0;
             width: 50vw;
             height: 100vh;
-            background: linear-gradient(to right, #c69326, #f2c94c, #c69326);
+            /* ベルベットの質感をグラデーションで表現 */
+            background-image:
+                radial-gradient(ellipse at top, rgba(255,255,255,0.15) 0%, transparent 40%),
+                linear-gradient(to right, #610a0a, #a61111 30%, #a61111 70%, #610a0a 100%);
             z-index: 1000;
-            transition: transform 2s cubic-bezier(0.77, 0, 0.175, 1);
-            box-shadow: 0 0 30px rgba(0,0,0,0.5);
+            /* 重みのあるアニメーション */
+            transition: transform 2.5s cubic-bezier(0.8, 0, 0.15, 1);
+            box-shadow: 0 0 40px rgba(0,0,0,0.6);
         }
-        .door-left {
+        .curtain-left {
             left: 0;
             transform-origin: left;
-            border-right: 2px solid #8c6815;
         }
-        .door-right {
+        .curtain-right {
             right: 0;
             transform-origin: right;
-            border-left: 2px solid #8c6815;
         }
-        .door.open {
+        .curtain.open {
             transform: scaleX(0);
         }
 
@@ -86,16 +89,14 @@ export default function HomePage() {
             align-items: center;
             position: relative;
             text-align: center;
-            /* 【重要修正】初期状態では非表示 */
             opacity: 0;
-            transition: opacity 1.5s ease-in-out;
+            transition: opacity 1.5s ease-in-out 0.5s; /* 扉が開き始めてからフェードイン */
         }
-        /* 【重要修正】扉が開いた後に表示させる */
         .intro-section.visible {
             opacity: 1;
         }
 
-        /* 【重要修正】白く発光するネオンロゴ */
+        /* 白く発光するネオンロゴ */
         .intro-section .logo {
             font-family: var(--font-heading);
             font-size: 4rem;
@@ -434,9 +435,9 @@ export default function HomePage() {
         `}
       </style>
 
-      {/* 【重要修正】ゴールドの扉 */}
-      <div className="door door-left"></div>
-      <div className="door door-right"></div>
+      {/* 【最重要修正】赤いカーテン */}
+      <div className="curtain curtain-left"></div>
+      <div className="curtain curtain-right"></div>
 
       {/* 1. Intro Section */}
       <section id="intro" className="intro-section">
@@ -546,15 +547,15 @@ export default function HomePage() {
       </footer>
 
       <script dangerouslySetInnerHTML={{ __html: `
-        // 【重要修正】扉を開けるアニメーションの制御
+        // 【最重要修正】カーテンを開けるアニメーションの制御
         window.addEventListener('load', () => {
-            const doors = document.querySelectorAll('.door');
+            const curtains = document.querySelectorAll('.curtain');
             const introSection = document.querySelector('.intro-section');
 
             // 1.5秒後にアニメーション開始
             setTimeout(() => {
-                doors.forEach(door => {
-                    door.classList.add('open');
+                curtains.forEach(curtain => {
+                    curtain.classList.add('open');
                 });
                 // 扉が開き始めたらイントロを見せる
                 introSection.classList.add('visible');
