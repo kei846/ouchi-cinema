@@ -557,5 +557,41 @@
     });
     </script>
 
+    <script>
+    const projectId = 'yrv186yu';
+    const dataset = 'production';
+    const apiVersion = '2023-07-12';
+    const query = encodeURIComponent('*[_type == "post" && slug.current == "gifted-movie-review-2025"][0]{title, "slug": slug.current, description, "mainImage": mainImage.asset->url}');
+
+    const url = `https://${projectId}.api.sanity.io/v${apiVersion}/datasets/${dataset}/query?query=${query}`;
+
+    fetch(url)
+      .then(response => response.json())
+      .then(data => {
+        const post = data.result;
+        if (post) {
+          const recommendationCard = document.querySelector('#now-showing .recommendation-card');
+          if (recommendationCard) {
+            const link = recommendationCard.querySelector('a');
+            const titleElement = recommendationCard.querySelector('h3');
+            const descriptionElement = recommendationCard.querySelector('p');
+
+            if (link) link.href = `/blog/${post.slug}`;
+            if (titleElement) titleElement.textContent = post.title;
+            if (descriptionElement) descriptionElement.textContent = post.description;
+
+            // Optional: Add image if available and a place for it
+            // if (post.mainImage) {
+            //   const img = document.createElement('img');
+            //   img.src = post.mainImage;
+            //   img.alt = post.title;
+            //   recommendationCard.prepend(img); // Add image before title
+            // }
+          }
+        }
+      })
+      .catch(error => console.error('Error fetching Sanity data:', error));
+    </script>
+
 </body>
 </html>
