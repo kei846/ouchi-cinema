@@ -395,24 +395,7 @@
             <section id="now-showing" class="container">
                 <h2>Now Showing</h2>
                 <div class="recommendations-grid">
-                    <div class="recommendation-card">
-                        <a href="#">
-                            <h3>心揺さぶるヒューマンドラマ</h3>
-                            <p>巨匠が描く、家族の愛と再生の物語。涙なしには見られない感動作。</p>
-                        </a>
-                    </div>
-                    <div class="recommendation-card">
-                        <a href="#">
-                            <h3>SF超大作の新たな幕開け</h3>
-                            <p>未知の惑星を舞台にした壮大な冒険。最新VFXが創り出す映像美は必見。</p>
-                        </a>
-                    </div>
-                    <div class="recommendation-card">
-                        <a href="#">
-                            <h3>謎が謎を呼ぶミステリー</h3>
-                            <p>完璧な密室殺人。名探偵は、この難事件を解決できるのか？</p>
-                        </a>
-                    </div>
+                    <!-- Sanity posts will be dynamically loaded here -->
                 </div>
             </section>
 
@@ -561,33 +544,50 @@
     const projectId = 'yrv186yu';
     const dataset = 'production';
     const apiVersion = '2023-07-12';
-    const query = encodeURIComponent('*[_type == "post" && slug.current == "gifted-movie-review-2025"][0]{title, "slug": slug.current, description, "mainImage": mainImage.asset->url}');
+    const query = encodeURIComponent('*[_type == "post"]|order(_createdAt desc)[0...3]{title, "slug": slug.current, description, "mainImage": mainImage.asset->url}');
 
     const url = `https://${projectId}.api.sanity.io/v${apiVersion}/datasets/${dataset}/query?query=${query}`;
 
     fetch(url)
       .then(response => response.json())
       .then(data => {
-        const post = data.result;
-        if (post) {
-          const recommendationCard = document.querySelector('#now-showing .recommendation-card');
-          if (recommendationCard) {
-            const link = recommendationCard.querySelector('a');
-            const titleElement = recommendationCard.querySelector('h3');
-            const descriptionElement = recommendationCard.querySelector('p');
+        const posts = data.result;
+        const recommendationsGrid = document.querySelector('#now-showing .recommendations-grid');
 
-            if (link) link.href = `/blog/${post.slug}`;
-            if (titleElement) titleElement.textContent = post.title;
-            if (descriptionElement) descriptionElement.textContent = post.description;
+        if (recommendationsGrid && posts && posts.length > 0) {
+          // Clear existing hardcoded cards (if any, though we'll remove them from HTML)
+          recommendationsGrid.innerHTML = ''; 
+
+          posts.forEach(post => {
+            const cardDiv = document.createElement('div');
+            cardDiv.classList.add('recommendation-card');
+
+            const link = document.createElement('a');
+            link.href = `/blog/${post.slug}`;
+
+            const titleElement = document.createElement('h3');
+            titleElement.textContent = post.title;
+
+            const descriptionElement = document.createElement('p');
+            descriptionElement.textContent = post.description;
+
+            link.appendChild(titleElement);
+            link.appendChild(descriptionElement);
+            cardDiv.appendChild(link);
 
             // Optional: Add image if available and a place for it
             // if (post.mainImage) {
             //   const img = document.createElement('img');
             //   img.src = post.mainImage;
             //   img.alt = post.title;
-            //   recommendationCard.prepend(img); // Add image before title
+            //   link.prepend(img); // Add image before title inside the link
             // }
-          }
+
+            recommendationsGrid.appendChild(cardDiv);
+          });
+        } else if (recommendationsGrid) {
+            // If no posts found, display a message or keep existing content
+            recommendationsGrid.innerHTML = '<p style="text-align: center; color: var(--color-text);">記事が見つかりませんでした。</p>';
         }
       })
       .catch(error => console.error('Error fetching Sanity data:', error));
